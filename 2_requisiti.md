@@ -95,3 +95,20 @@ Dovranno essere collocati i seguenti sensori per permettere il corretto funziona
 - Deve essere sfruttata la tecnologia offerta da "GitHub" per effettuare "*Continuous Integration*", ovvero "GitHub Actions".
 
 ## Casi d'uso
+<<<<<<< HEAD
+=======
+
+<img title="Applicazione" alt="Diagramma dei casi d'uso dell'applicazione" src="res/Applicazione.jpg">
+
+<img title="Dashboard responsabili" alt="Diagramma dei casi d'uso della dashboard dei responsabili" src="res/DashboardResponsabile.jpg">
+
+<img title="Dashboard amministratori" alt="Diagramma dei casi d'uso della dashboard degli amministratori" src="res/DashboardAmministrazione.jpg">
+
+<img title="Carrello" alt="Diagramma dei casi d'uso dei carrelli" src="res/Carrello.jpg">
+
+<img title="Sistema restituzione" alt="Diagramma dei casi d'uso del sistema di restituzione" src="res/SistemaRestituzione.jpg">
+
+<img title="Sistema antitaccheggio" alt="Diagramma dei casi d'uso del sistema antitaccheggio" src="res/SistemaAntitaccheggio.jpg">
+
+<img title="Gondola" alt="Diagramma dei casi d'uso della gondola" src="res/Gondola.jpg">
+>>>>>>> 2f13af8 (requisiti)
