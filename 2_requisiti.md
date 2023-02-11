@@ -40,7 +40,7 @@ Dovranno essere collocati i seguenti sensori per permettere il corretto funziona
 ## Requisiti funzionali
 
 - L’applicatione consente ai clienti di creare un account, effettuare il login e logout, cancellare l’account.
-- L’applicazione rileva l’entrata e l’uscita del cliente dal negozio (*simulato ? o non si fa proprio*).
+- L’applicazione rileva l’entrata e l’uscita del cliente dal negozio.
 - L’applicazione consente di sbloccare un carrello alla volta.
 - L’applicazione consente al cliente di scannerizzare i prodotti e visualizzarne le informazioni.
 - L’applicazione mostra al cliente i prodotti presenti nel carrello durante l’acquisto.
@@ -78,3 +78,20 @@ Dovranno essere collocati i seguenti sensori per permettere il corretto funziona
     - aggiungere o rimuovere tipologie di prodotti in vendita presso tutti i negozi della catena;
     - modificare le informazioni dei prodotti in vendita;
     - creare o eliminare gli account dei responsabili di negozio.
+
+## Requisiti non funzionali
+
+- Il sistema deve essere sufficientemente modulare in modo tale da essere possibile riusare i suoi componenti in contesti diversi senza problemi. Non ci devono essere dipendenze tra le classi dei componenti, ma solo verso interfacce liberamente re-implementabili.
+- L'applicazione non deve mai interrompersi qualora si verifichi un errore; deve invece mostrare un messaggio di errore all'utente.
+- L'applicazione deve essere fluida, cioè non presentare *stuttering* o *freezing.*
+
+## Requisiti implementativi
+
+- L'implementazione dell'applicazione deve essere fatta nel linguaggio "Scala", con compatibilità garantita con la versione 3.1.3.
+- Deve essere sfruttato lo strumento di *build automation* "Scala Build Tool" versione 1.5.5 per automatizzare la compilazione, il *testing* e il *deployment* degli artefatti rilasciati.
+- Lo sviluppo deve avvenire attingendo quanto più possibile al paradigma di programmazione funzionale.
+- Domain-Driven Design.
+- La repository deve essere gestita attraverso il DVCS "git" e mantenuta sul servizio di hosting "GitHub".
+- Deve essere sfruttata la tecnologia offerta da "GitHub" per effettuare "*Continuous Integration*", ovvero "GitHub Actions".
+
+## Casi d'uso
