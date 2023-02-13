@@ -31,11 +31,6 @@ I bounded context che sono emersi sono i seguenti:
 <img title="Gondola" alt="Diagramma dei casi d'uso della gondola" src="res/Gondola.jpg">
 
 ## Design architetturale
-Ogni bounded context è stato pensato come un microservizio, così che siano tutti indipendentri tra di loro, la comunicazione tra di essi avviene attraverso un sistema a scambio di messaggi.
-
-<img title="Architettura" alt="Architettura" src="res/Architecture.jpg">
-
-## Design nel dettaglio
 A seguito di un incontro è emerso che la scelta migliore sia quella di utilizzare u'architettura a microservizi, nello specifico, uno per ogni bounded context, quindi un sistema composto da un totale di 6 microservizi. L'architettura del sistema è stata poi sviluppata sulle linee guida della clean architecture di Martin Fowler. I microservizi sono:
 - Users
 - Carts
@@ -43,6 +38,8 @@ A seguito di un incontro è emerso che la scelta migliore sia quella di utilizza
 - Stores
 - Shopping
 - Payments
+
+<img title="Architettura" alt="Architettura" src="res/Architecture.jpg">
 
 L'architettura del singolo microservizio è uguale per tutti ed è composta su due livelli:
 - **core**: in questo livello contiene tutte le entità del dominio del microservizio e per progettazione è ad alto livello di astrazione. Questo package contiene moduli di alto livello che descrivono il dominio tramite aggregate, entities, value objects, services e domain events.
@@ -78,3 +75,17 @@ A livello applicazione troviamo i seguenti attori:
 - attore per il message broker:
 
 Il microservizio espone le sue funzionalità all'esterno grazie alle route, ogni aggregato offre le sue operazioni specificando prima verso il tipo (eg. store_manager oppure administration) e poi il nome dell'operazione che si vuole effettuare.
+
+### Microservizio "Items"
+
+### Microservizio "Carts"
+
+### Microservizio "Stores"
+
+### Microservizio "Shopping"
+
+### Microservizio "Payments"
+
+
+## Design nel dettaglio
+
