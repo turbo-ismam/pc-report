@@ -66,23 +66,20 @@ Ogni aggregato espone tutte le sue funzionalità attraverso il proprio Repositor
 
 ### Livello application
 Questo livello contiene due sotto componenti:
-- actors: qui dentro sono definiti gli attori ed i loro comportamenti, abbiamo 
-- routes
-
-In questo livello troviamo i seguenti attori:
-- attore administration: può gestire due tipologie di messaggi:
-    - login: si verificano i dati e si da una risposta positiva in caso di dati di accesso corretti e negativa in caso contrario
-    - update: si verificano i dati e viene data una risposta
-- attore customer: può gestire cinque tipologie di messaggi:
-    - registrazione
-    - deregistrazione
-    - login
-    - update dei dati
-    - update della password
-- attore store manager: gestisce gli stessi tipi di messaggi di un attore di tipo customer, con la differenza di alcuni campi all'interno dei messaggi
-- attore per il message broker:
-
-Il microservizio espone le sue funzionalità all'esterno grazie alle route, ogni aggregato offre le sue operazioni specificando prima verso il tipo (eg. store_manager oppure administration) e poi il nome dell'operazione che si vuole effettuare.
+- actors: qui dentro sono definiti gli attori ed i relativi comportamenti (rappresentati dai messaggi che possono ricevere). Troviamo i seguenti attori:
+    - attore administration: può gestire due tipologie di messaggi:
+        - login: si verificano i dati e si da una risposta positiva in caso di dati di accesso corretti e negativa in caso contrario
+        - update: si verificano i dati e viene data una risposta
+    - attore customer: può gestire cinque tipologie di messaggi:
+        - registrazione
+        - deregistrazione
+        - login
+        - update dei dati
+        - update della password
+    - attore store manager: gestisce gli stessi tipi di messaggi di un attore di tipo customer, con la differenza di alcuni campi all'interno dei messaggi
+    - attore per il message broker:
+- routes: serve per esporre all'esterno le funzionalità di questo microservizio.
+Ogni route al suo interno utilizza un attore e fornisce all'esterno un'interfaccia per poter utilizzarlo.
 
 ### Microservizio "Items"
 
