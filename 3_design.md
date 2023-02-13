@@ -53,6 +53,7 @@ L'architettura del singolo microservizio è uguale per tutti ed è composta su d
 - supporto a login e logout degli utenti
 - mantenimento della sessione di login degli utenti
 
+### Livello core
 Questo bounded context è responsabile dei seguenti aggregati:
 - administration: è un'estensione di un generico user e rappresenta un amministratore del sistema
 - customer: è un'estensione di un generico user e rappresente ogni cliente che utilizzerà l'appicazione
@@ -61,7 +62,14 @@ Questo bounded context è responsabile dei seguenti aggregati:
 L'administration non può essere registrato come i customer e gli store manager ma deve essere messo hardcoded, lo storemanager è invece associato univocamente al proprio negozio.
 Tutte e tre le estensioni di user hanno un servizio per poter criptare le password ed espongono un'interfaccia per poter essere create, eliminate ed aggiornate.
 
-A livello applicazione troviamo i seguenti attori:
+Ogni aggregato espone tutte le sue funzionalità attraverso il proprio Repository.
+
+### Livello application
+Questo livello contiene due sotto componenti:
+- actors: qui dentro sono definiti gli attori ed i loro comportamenti, abbiamo 
+- routes
+
+In questo livello troviamo i seguenti attori:
 - attore administration: può gestire due tipologie di messaggi:
     - login: si verificano i dati e si da una risposta positiva in caso di dati di accesso corretti e negativa in caso contrario
     - update: si verificano i dati e viene data una risposta
