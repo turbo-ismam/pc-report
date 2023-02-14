@@ -43,84 +43,66 @@ A seguito di un incontro è emerso che la scelta migliore sia quella di utilizza
 <!--<img title="Architettura" alt="Architettura" src="res/Architecture.jpg"> -->
 
 L'architettura del singolo microservizio è uguale per tutti ed è composta su due livelli:
-- **core**: questo livello contiene tutte le entità del dominio del microservizio e per progettazione è ad un alto livello di astrazione. Contiene moduli che descrivono il dominio tramite aggregate, entities, value objects, services e domain events.
-Ogni aggregate inoltre espone attravero il proprio repository le sue funzionalità all'esterno.
-- **application**: questo livello fornisce i casi d'uso del microservizio, contiene quindi tutta la logica dell'applicazione, ha una dipendenza dal livello core. Questo livello fornisce un'interfaccia da implementare dall'esterno (attravero l'invio e la ricezione di messaggi).
+- **domain**: questo livello contiene tutte le entità del dominio del microservizio, è ad un più alto livello di astrazione, rispetto al livello successivo perchè è interessato esclusivamente al modello del dominio. Le entità del dominio sono modellate come aggregate, entities, value objects, services e domain events.
+Ogni aggregate inoltre espone al livello application attraverso il proprio repository le funzionalità di persistenza dei dati.
+- **application**: questo livello cattura i casi d'uso del microservizio, contiene quindi tutta la logica dell'applicazione ed è quindi dipendente dal livello domain. Questo livello fornisce un'interfaccia utilizzabile dall'esterno (attraverso l'invio e la ricezione di messaggi).
 Contiene due moduli:
-    - **actors**, questi descrivono il comportamento a livello applicazione. Ogni attore al proprio interno gestisce una serie di richieste e fornisce delle risposte. I messaggi che gli attori ricevono sono di tipo *replyTo* (richieste che esigono risposte), l'attore che riceve il messaggio conosce il nome dell'attore che ha inviato la richiesta ed invia la risposta (questa viene poi deserializzata in una entity di risposta).
-    Ogni bounded context possiede almeno il root actor, è colui che si occupa di lanciare gli attori che sono presenti in quel bounded context.
-    - **routes** specificano le informazioni su come il microservizio può essere utilizzato dall'esterno, lo si fa costruendo un server con akkahttp.
-    Questo espone delle uri accessibili attraverso le quali possono essere fatte richieste get, post, put o delete.
-    Quando la route riceve richieste in entrata, viene fatto unmarshalling dei json per trasformarli in delle entity, si estraggono le informazioni per ottenere l'indirizzo del server a cui inviare il messaggio e lo si invia (ma come risposta o all'attore???). Gli invii di messaggi che vogliouno una risposta (una ask) generano un attore temporaneo per un certo timeout, se il messaggio torna indietro è corretto, altrimenti si ottiene una dead letter. Una ask è una future e quando è completa riceve il messaggio di risposta.
+    - **actors**: questo modulo contiene gli attori che descrivono il comportamento a livello applicazione. Ogni attore al proprio interno gestisce una serie di richieste e fornisce per ognuna la corrispondente risposta.
+    - **routes**: questo modulo contiene le route di un web service che descrivono l'API che il microservizio espone verso l'esterno.
+    Ciascuna route è rappresentata da un'URI, alla quale possono essere fatte richieste di tipo GET, POST, PUT o DELETE.
+    La codifica dei messaggi che vengono inviati e ricevuti contattando il web service è sempre in formato JSON.
     
-
-
 ## Design nel dettaglio
 
 ### Microservizio "Users"
-"Users" è il microservizio adibito alla gestione dei dati relativi agli utenti. 
-Le business operations al suo interno sono:
-- cliente che effettua login con email e password
-- responsabile negozio che effettua login con email e password
-- amministratore che effettua login con email e password
+"Users" è il microservizio adibito alla gestione dei dati relativi agli utenti.
 
-Questo microservizio non gestisce le sessioni di login.
-
-Come ogni microservizio ha una serie di comunicazioni in entrata ed in uscita:
-- comunicazioni in entrata: 
-    - registrazione o de-registrazione di nuovi utenti (da applicazione)
-    - modifica dei dati o della password di un utente (da applicazione)
-    - verifica password (da applicazione e dashboard)
-    - registrazione o de-registrazione di nuovi store manager (da dashboard)
-    - modifica dei dati o della password di uno store manager (da dashboard)
-    - modifica della password di un administration (da dashboard)
+Come ogni microservizio ha una serie di messaggi in ingresso e restituisce in uscita:
+- comunicazioni in ingresso: 
+    - registrazione e de-registrazione di nuovi utenti (da applicazione)
+    - modifica dei dati e della password di un utente (inviato da applicazione)
+    - login (inviato da applicazione e dashboard)
+    - registrazione e de-registrazione di nuovi store manager (inviato da dashboard)
+    - modifica dei dati e della password di uno store manager (inviato da dashboard)
+    - modifica della password di un administration (inviato da dashboard)
 - comunicazioni in uscita:
-    - notifica del cliente de-registrato (verso shopping)
-    - notifica del cliente de-registrato (verso carts)
-    - notifica del cliente de-registrato (verso payments)
+    - notifica del cliente de-registrato (inviato a shopping, carts e payments)
 
-Le operazioni di modifica password sono dei servizi (effettuano letture), le altre operazioni sono operazioni che vanno ad apportare modifiche ai dati gestiti all'interno del microservizio.
+Le operazioni di login sono delle query che leggono informazioni contenute nel microservizio, le altre operazioni vanno ad apportare modifiche ai dati gestiti all'interno del microservizio modificandone lo stato.
 
-### Livello core
+### Livello domain
 Questo bounded context è responsabile dei seguenti aggregates:
-- user: è una generalizzazione dei vari tipi di utenti
-- administration: è un'estensione di user e rappresenta un amministratore del sistema
-- customer: è un'estensione di user e rappresente ogni cliente che utilizzerà l'appicazione
-- store manager è un'estensione di user e rappresenta il manager del negozio
+- user: rappresenta un generico utente del sistema
+- administration: è un utente che svolge il ruolo di amministratore del sistema
+- customer: è un utente che rappresenta cliente che utilizzerà l'appicazione
+- store manager è un utente che rappresenta il responsabile di negozio
 
-L'administration non può essere registrato come i customer e gli store manager ma deve essere messo hardcoded, lo storemanager è invece associato univocamente al proprio negozio.
-Tutte e tre le estensioni di user hanno un servizio per poter criptare le password ed espongono un'interfaccia per poter essere create, eliminate ed aggiornate.
+Nel sistema esiste un unico profilo di administration, questo significa che non è possibile ne registrarne di nuovi o de-registrare quello esistente, questo profilo viene inserito all'avvio del sistema.
+User mette a disposizione un servizio per poter cifrare le password ed espone un'interfaccia per poter essere creato, eliminato ed aggiornato.
 
 ### Livello application
-Per definire il comportamento di questo bounded context troviamo i seguenti attori:
+Per definire il comportamento di questo bounded context sono stati utilizzati i seguenti attori:
 - administration server actor: può gestire due tipologie di messaggi:
-    - login: si verificano i dati e si da una risposta positiva in caso di dati di accesso corretti e negativa in caso contrario
-    - update: si verificano i dati e viene data una risposta
-- customer server actor: può gestire cinque tipologie di messaggi:
-    - registrazione
-    - deregistrazione
-    - login
-    - update dei dati
-    - update della password
-- store manager server actor: gestisce gli stessi tipi di messaggi di un attore di tipo customer, con la differenza di alcuni campi all'interno dei messaggi
-- attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter rispondere agli eventi in uscita, informa che un utente si sia de-registrato. Questo attore viene utilizzato da administration, customer e storemanager.
+    - login: i confrontano i dati forniti con quelli presenti nel sistema, in caso di corretta associazione viene fornita una rispota positiva, negativa altrimenti
+    - update: permette l'aggiornamento della password e viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
+- customer server actor: gestisce gli stessi messaggi di administration con l'aggiunta di:
+    - update: permette l'aggiornamento dei dati e della password e viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
+    - registrazione: permette l'inserimento di un nuovo customer specificado lo username ed una password, viene data una risposta positiva in caso l'operazione abbia avuto successo, negativa altrimenti
+    - deregistrazione: permette l'eliminazione di un customer specificado lo username ed una password, viene data una risposta positiva in caso l'operazione abbia avuto successo, negativa altrimenti
+- store manager server actor: gestisce gli stessi tipi di messaggi di un attore di tipo customer, con la differenza di alcuni campi diversi nel login e nell'update.
+- attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter generare eventi in uscita, i quali informano i bounded context shopping, carts e payments che un utente si è de-registrato, di qualsiasi tipologia.
 
 ### Microservizio "Items"
 "Items" è il microservizio adibito alla gestione dei dati relativi agli prodotti.
-Le business decision che riguardano questo bounded context sono:
-- la possibilità di effettuare le operazioni con la dashboard dipende dal tipo di utente che le effettua
-- l'eliminazione di una tipologia di prodotto non è possibile finché vi è associato almeno un prodotto in catalogo
-- l'eliminazione di un prodotto in catalogo non è possibile finchè vi è associato almeno un prodotto
-- l'eliminazione di un prodotto non è possibile finchè questo è parte dell'allestimento di almeno un negozio e parte del processo di acquisto di almeno un cliente
 
-Come ogni microservizio ha una serie di comunicazioni in entrata ed in uscita:
-- comunicazioni in entrata:
-    - operazioni per effettuare azioni (creazione, rimozione o aggiornamento dei dati):
+Come ogni microservizio ha una serie di messaggi in ingresso ed in uscita:
+- comunicazioni in ingresso:
+    - query per aggiornamenti:
         - aggiungere e rimuovere di nuove categorie di prodotto (da dashboard)
         - aggiungere e rimuovere di nuovi prodotti in catalogo (da dashboard)
         - aggiungere di nuovi prodotti (da dashboard)
         - eliminare un prodotto (da dashboard)
-    - operazioni per visualizzare dati:
+    - query per visualizzare dati:
         - visualizzare prodotti in catalogo (da dashboard e applicazione e shopping)
         - visualizzare prodotti restituiti (da dashboard)
         - visualizzare prodotti in catalogo sollevati (da dashboard)
@@ -137,7 +119,7 @@ Come ogni microservizio ha una serie di comunicazioni in entrata ed in uscita:
 
 
 ### Livello core
-Questo bounded context è responsabile dei seguenti aggregati:
+Questo bounded context è responsabile dei seguenti aggregates:
 - item category: rappresenta una categoria di prodotto, ovvero un insieme di prodotti uguali
 - catalog item: rappresenta i prodotti in catalogo di ogni negozio. possono essere di due tipi:
     - in place: rappresentano i prodotti in catalogo che sono al momento al proprio posto
@@ -152,10 +134,24 @@ Ogni aggregato espone tutte le sue funzionalità attraverso il proprio Repositor
 
 ### Livello application
 Per definire il comportamento di questo bounded context troviamo i seguenti attori:
-- item category actor: gestisce le operazioni relative alle categorie di prodotti, al suo interno vengono gestiti i messaggi che permettono di creare, rimuovere, manipolare o effettuare query sulle categorie di prodotti
-- catalog item actor: gestisce le operazioni relative ai prodotti in catalogo,  al suo interno vengono gestiti i messaggi che permettono di creare, rimuovere, manipolare o effettuare query sui prodotti in catalogo
-- item actor:  gestisce le operazioni relative ai prodotti,  al suo interno vengono gestiti i messaggi che permettono di creare, rimuovere, manipolare o effettuare query sui prodotti
-
+- item category server actor: gestisce le operazioni relative alle categorie di prodotti, al suo interno vengono gestiti i seguenti messaggi:
+    - show: dato l'identificatore di una categoria di prodotto, restituisce una risposta con le informazioni relative ad esso nel caso esista, altrimenti da una risposta negativa
+    - add: permette l'inserimento di una categoria di prodotti specificando il nome e la descrizione, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - remove: permette l'eliminazione di una categoria di prodotti specificando l'identificativo, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - update: permette l'aggiornamento del nome e della descrizione, viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
+- catalog item server actor: gestisce le operazioni relative ai prodotti in catalogo,  al suo interno vengono gestiti i seguenti messaggi:
+    - show lifted: permette di visualizzare tutti i prodotti in catalogo che al momento sono sollevati
+    - add: permette l'inserimento di un prodotto in catalogo specificando l'identificativo (composto dal proprio id e dall'id dello store) ed il prezzo, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - remove: permette l'eliminazione di un prodotto in catalogo specificando l'identificativo e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - update: permette l'aggiornamento del prezzo, viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
+- item server actor: gestisce le operazioni relative alle categorie di prodotti, al suo interno vengono gestiti i seguenti messaggi:
+    - show returned: permette di visualizzare tutti i prodotti che sono stati restituiti
+    - add: permette l'inserimento di un prodotto specificando l'identificativo (composto dal proprio id e dall'id dello store e dal prodotto in catalogo) e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - remove: permette l'eliminazione di un prodotto specificando l'identificativo e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - update: permette l'aggiornamento dello stato del prodotto, viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
+- attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter generare eventi in uscita:
+- visualizza presenza processi d'acqusito con prodotto: evento che si inoltra allo Shopping in quanto per rimuovere un prodotto è necessario che non sia presente al momento in processi di acquisto.
+- visualizza presenza allestimenti con prodotto
 
 ### Microservizio "Carts"
 
