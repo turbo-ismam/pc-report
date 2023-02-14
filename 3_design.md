@@ -130,7 +130,7 @@ Questo bounded context è responsabile dei seguenti aggregates:
     - returned: rappresentano i prodotti resi
 
 L'aggregato item al suo interno utilizza il proprio catalog item che a sua volta utilizza item category.
-Ogni aggregato espone tutte le sue funzionalità attraverso il proprio Repository.
+Item mette a disposizione un'interfaccia per poter essere creato, eliminato ed aggiornato
 
 ### Livello application
 Per definire il comportamento di questo bounded context troviamo i seguenti attori:
@@ -155,12 +155,48 @@ Per definire il comportamento di questo bounded context troviamo i seguenti atto
 
 ### Microservizio "Carts"
 
+"Carts" è il microservizio adibito alla gestione dei dati relativi ai carrelli.
+
+Come ogni microservizio ha una serie di messaggi in ingresso in uscita:
+- messaggi in ingresso:
+    - query che modificano lo stato:
+        - associare un carrello ad un utente (inviato da applicazione e dashboard)
+        - sbloccare un carrello bloccato (inviato da dashboard)
+        - bloccare un carrello sbloccato (inviato da dashboard)
+        - aggiungi un carrello (inviato da dashboard)
+        - rimuovi un carrello (inviato da dashboard)
+        - blocca un carrello associato ad un cliente (inviato da shopping)
+    - query di visualizzazione:
+        - visualizza i carrelli in negozio (inviato da dashboard)
+    - eventi
+        - notifica di appoggio di un prodotto nel carrello (inviato da user)
+        - notifica del movimento del carrello (inviato da cliente)
+        - notifica cliente de-registrato (inviato da users)
+- messaggi in uscita
+    - eventi
+        - Notifica aggiunta prodotto in carrello (inviato a prodotti)
+        - Notifica di aggiunta di un prodotto in carrello (inviato a shopping)
+        - Notifica associazione carrello (inviato a shopping)
+    - query che modificano lo stato
+        - Attiva allarme carrello (inviato a users)
+
+### Livello domain
+
+Questo bounded context è responsabile dei seguenti aggregates:
+- cart: rappresentano i carrelli del sistema, possono essere di tre tipologie:
+    - associated cart: rappresenta un carrello che è associato ad un cliente
+    - locked cart: rappresenta un carrello che è bloccato
+    - unlocked cart: rappresenta un cartello che è sbloccato
+
+Cart mette a disposizione un'interfaccia per poter essere creato, eliminato ed aggiornato
+
+### Livello application
+Per definire il comportamento di questo bounded context sono stati utilizzati i seguenti attori:
+- cart server actor:
+
 ### Microservizio "Stores"
 
 ### Microservizio "Shopping"
 
 ### Microservizio "Payments"
-
-
-## Design nel dettaglio
 
