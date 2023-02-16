@@ -147,7 +147,11 @@ Per definire il comportamento di questo microservizio troviamo i seguenti attori
     - remove: permette l'eliminazione di un prodotto specificando l'identificativo e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - update: permette l'aggiornamento dello stato del prodotto, viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
 - attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter catturare eventi in ingresso:
-    - 
+    - prodotto rimesso a posto: quando un prodotto viene riposto sullo scaffale
+    - prodotto in catalogo rimesso a posto: quando un prodotto in catalogo viene riposto sullo scaffale
+    - sollevamento prodotto in catalogo: quando un prodotto in catalogo viene sollevato dal proprio scaffale
+    - aggiunta prodotto in carrello: quando in un carrello viene posato un prodotto
+    - restituzione prodotto: quando un prodotto viene restituito attraverso l'apposito sistema
 
 ### Microservizio "Carts"
 
