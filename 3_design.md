@@ -40,7 +40,7 @@ A seguito di un incontro è emerso che la scelta migliore sia quella di utilizza
 - Shopping
 - Payments
 
-<img title="Architettura" alt="Architettura" src="res/Architecture.svg">
+<img title="Architettura" alt="Architecture" src="res/Architecture.svg">
 
 L'architettura del singolo microservizio è uguale per tutti ed è composta su due livelli:
 - **domain**: questo livello contiene tutte le entità del dominio del microservizio, è ad un più alto livello di astrazione, rispetto al livello successivo perchè è interessato esclusivamente al modello del dominio. Le entità del dominio sono modellate come aggregate, entities, value objects, services e domain events.
