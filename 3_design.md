@@ -61,14 +61,14 @@ Contiene due moduli:
 
 Come ogni microservizio ha una serie di messaggi in ingresso e restituisce in uscita:
 - comunicazioni in ingresso: 
-    - registrazione e de-registrazione di nuovi utenti (da applicazione)
+    - registrazione e de-registrazione di nuovi utenti (inviato da applicazione)
     - modifica dei dati e della password di un utente (inviato da applicazione)
     - login (inviato da applicazione e dashboard)
     - registrazione e de-registrazione di nuovi store manager (inviato da dashboard)
     - modifica dei dati e della password di uno store manager (inviato da dashboard)
     - modifica della password di un administration (inviato da dashboard)
 - comunicazioni in uscita:
-    - notifica del cliente de-registrato (inviato a shopping, carts e payments)
+    - notifica del cliente de-registrato (inviato ai microservizi shopping, carts e payments)
 
 Le operazioni di login sono delle query che leggono informazioni contenute nel microservizio, le altre operazioni vanno ad apportare modifiche ai dati gestiti all'interno del microservizio modificandone lo stato.
 
@@ -95,64 +95,59 @@ Per definire il comportamento di questo bounded context sono stati utilizzati i 
 - attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter generare eventi in uscita, i quali informano i bounded context shopping, carts e payments che un utente si è de-registrato, di qualsiasi tipologia.
 
 ### Microservizio "Items"
-"Items" è il microservizio adibito alla gestione dei dati relativi agli prodotti.
+"Items" è il microservizio adibito alla gestione dei dati relativi ai prodotti.
 
-Come ogni microservizio ha una serie di messaggi in ingresso ed in uscita:
+Come ogni microservizio ha una serie di messaggi in ingresso e in uscita:
 - comunicazioni in ingresso:
-    - query per aggiornamenti:
-        - aggiungere e rimuovere di nuove categorie di prodotto (da dashboard)
-        - aggiungere e rimuovere di nuovi prodotti in catalogo (da dashboard)
-        - aggiungere di nuovi prodotti (da dashboard)
-        - eliminare un prodotto (da dashboard)
-    - query per visualizzare dati:
-        - visualizzare prodotti in catalogo (da dashboard e applicazione e shopping)
-        - visualizzare prodotti restituiti (da dashboard)
-        - visualizzare prodotti in catalogo sollevati (da dashboard)
-        - visualizzare tipologia di prodotto (da dashboard e store)
-    - eventi
-        - notifica di prodotto rimesso a posto (dashboard)
-        - notifica prodotto in catalogo rimesso a posto (dashboard)
-        - notifica sollevamento prodotto in catalogo (shopping, store)
-        - notifica aggiunta prodotto in carrello (shopping e cart)
-        - notifica restituzione prodotto (store)
+    - comandi che modificano lo stato:
+        - aggiungere, rimuovere e aggiornare categorie di prodotto (inviato da dashboard)
+        - aggiungere, rimuovere e aggiornare prodotti in catalogo (inviato da dashboard)
+        - aggiungere e rimuovere prodotti (inviato da dashboard)
+    - query di visualizzazione:
+        - visualizzare prodotti in catalogo (inviato da dashboard, applicazione e microservizio shopping)
+        - visualizzare prodotti restituiti (inviato da dashboard)
+        - visualizzare prodotti in catalogo sollevati (inviato da dashboard)
+        - visualizzare tipologia di prodotto (inviato da dashboard e microservizio store)
+    - eventi:
+        - prodotto rimesso a posto (inviato da dashboard)
+        - prodotto in catalogo rimesso a posto (inviato da dashboard)
+        - prodotto in catalogo sollevato (inviato dai microservizi shopping e store)
+        - prodotto aggiunto al carrello (inviato dai microservizi shopping e cart)
+        - prodotto restituito (inviato dal microservizio store)
 - comunicazioni in uscita:
-    - query per visualizzare dati:
-        - visualizza presenza allestimenti con prodotto (store)
-        - visualizza presenza processi d'acqusito con prodotto (shopping)
+    - query di visualizzazione:
+        - visualizzare presenza processi d'acqusito con prodotto (inviato a microservizio shopping)
 
-### Livello core
-Questo bounded context è responsabile dei seguenti aggregates:
-- item category: rappresenta una categoria di prodotto, ovvero un insieme di prodotti uguali
-- catalog item: rappresenta i prodotti in catalogo di ogni negozio. possono essere di due tipi:
-    - in place: rappresentano i prodotti in catalogo che sono al momento al proprio posto
-    - lifted: rappresentano i prodotti in catalogo che sono al momento sollevati
-- item: rappresenta il singolo prodotto, possono essere di tre tipi:
-    - in place: rappresentano i prodotti sullo scaffale
-    - in cart: rappresentano i prodotti nel carrello
-    - returned: rappresentano i prodotti resi
-
-L'aggregato item al suo interno utilizza il proprio catalog item che a sua volta utilizza item category.
-Item mette a disposizione un'interfaccia per poter essere creato, eliminato ed aggiornato
+### Livello domain
+Il bounded context associato a questo microservizio è responsabile dei seguenti aggregates:
+- item category: rappresenta una categoria di prodotto, ovvero un tipologia di prodotti che possiedono stesso nome e descrizione
+- catalog item: rappresenta un prodotto contenuto nel catalogo di un negozio. Possono essere di due tipi:
+    - in place: rappresenta un prodotto in catalogo che è al momento al proprio posto su una fila di uno scaffale
+    - lifted: rappresenta un prodotto in catalogo che è al momento sollevato dalla propria fila
+- item: rappresenta il singolo prodotto, può essere di tre tipi:
+    - in place: rappresenta il prodotto mentre si trova in una fila di prodotti
+    - in cart: rappresenta un prodotto in un carrello
+    - returned: rappresenta un prodotto che è stato restituito
 
 ### Livello application
-Per definire il comportamento di questo bounded context troviamo i seguenti attori:
+Per definire il comportamento di questo microservizio troviamo i seguenti attori:
 - item category server actor: gestisce le operazioni relative alle categorie di prodotti, al suo interno vengono gestiti i seguenti messaggi:
-    - show: dato l'identificatore di una categoria di prodotto, restituisce una risposta con le informazioni relative ad esso nel caso esista, altrimenti da una risposta negativa
+    - show: dato l'identificatore di una categoria di prodotto, restituisce una risposta con le informazioni relative ad esso nel caso esista, altrimenti dà una risposta negativa
     - add: permette l'inserimento di una categoria di prodotti specificando il nome e la descrizione, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - remove: permette l'eliminazione di una categoria di prodotti specificando l'identificativo, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - update: permette l'aggiornamento del nome e della descrizione, viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
-- catalog item server actor: gestisce le operazioni relative ai prodotti in catalogo,  al suo interno vengono gestiti i seguenti messaggi:
-    - show lifted: permette di visualizzare tutti i prodotti in catalogo che al momento sono sollevati
-    - add: permette l'inserimento di un prodotto in catalogo specificando l'identificativo (composto dal proprio id e dall'id dello store) ed il prezzo, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
-    - remove: permette l'eliminazione di un prodotto in catalogo specificando l'identificativo e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+- catalog item server actor: gestisce le operazioni relative ai prodotti in catalogo, al suo interno vengono gestiti i seguenti messaggi:
+    - show all lifted: permette di visualizzare tutti i prodotti in catalogo che al momento sono sollevati
+    - add: permette l'inserimento di un prodotto in catalogo specificando la categoria di prodotto, il negozio di appartenenza ed il prezzo, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - remove: permette l'eliminazione di un prodotto in catalogo specificando l'identificativo, ovvero un numero incrementale e il codice negozio, e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - update: permette l'aggiornamento del prezzo, viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
 - item server actor: gestisce le operazioni relative alle categorie di prodotti, al suo interno vengono gestiti i seguenti messaggi:
-    - show returned: permette di visualizzare tutti i prodotti che sono stati restituiti
-    - add: permette l'inserimento di un prodotto specificando l'identificativo (composto dal proprio id e dall'id dello store e dal prodotto in catalogo) e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - show all returned: permette di visualizzare tutti i prodotti che sono stati restituiti
+    - add: permette l'inserimento di un prodotto specificando l'identificativo (composto da un proprio id, dall'id dello store e dal prodotto in catalogo) e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - remove: permette l'eliminazione di un prodotto specificando l'identificativo e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - update: permette l'aggiornamento dello stato del prodotto, viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
-- attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter generare eventi in uscita:
-    - visualizza presenza processi d'acqusito con prodotto: evento che si inoltra allo Shopping in quanto per rimuovere un prodotto è necessario che non sia presente al momento in processi di acquisto.
+- attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter catturare eventi in ingresso:
+    - 
 
 ### Microservizio "Carts"
 
@@ -183,7 +178,7 @@ Come ogni microservizio ha una serie di messaggi in ingresso in uscita:
 
 ### Livello domain
 
-Questo bounded context è responsabile dei seguenti aggregates:
+Il bounded context associato a questo microservizio è responsabile dei seguenti aggregates:
 - cart: rappresentano i carrelli del sistema, possono essere di tre tipologie:
     - associated cart: rappresenta un carrello che è associato ad un cliente
     - locked cart: rappresenta un carrello che è bloccato
