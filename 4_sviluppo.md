@@ -1,6 +1,6 @@
 # Sviluppo
 
-## Trunk based develop
+## Trunk based development
 
 Il workflow adottato nel progetto è *trunk-based*, che differisce dal classico *git workflow* in quanto favorisce agilità e rapidità in concordanza con l’approccio *continuous deployment*
 
@@ -45,6 +45,6 @@ Le dipendenze gestite da Renovate sono:
 - GitHub Actions; aggiornamenti contrassegnati come “ci”.
 - Build Automation dependencies: aggiornamenti contrassegnati come “build”.
 
-Intolre ad ogni release di un *submodule*la repo principale viene aggiornata automaticamente.
+Inoltre ad ogni release di un *submodule*la repo principale viene aggiornata automaticamente.
 
 Renovate gestisce anche le vulnerabilità di sicurezza individuate tramite la lettura dei report di sicurezza di Dependabot.
