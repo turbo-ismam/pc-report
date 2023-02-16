@@ -18,19 +18,19 @@ I bounded context che sono emersi sono i seguenti:
 
 ### Diagrammi dei casi d'uso
 
-<!--<img title="Applicazione" alt="Diagramma dei casi d'uso dell'applicazione" src="res/Applicazione.jpg">
+<img title="Applicazione" alt="Diagramma dei casi d'uso dell'applicazione" src="res/Applicazione.svg">
 
-<img title="Dashboard responsabili" alt="Diagramma dei casi d'uso della dashboard dei responsabili" src="res/DashboardResponsabile.jpg">
+<img title="Dashboard responsabili" alt="Diagramma dei casi d'uso della dashboard dei responsabili" src="res/DashboardResponsabile.svg">
 
-<img title="Dashboard amministratori" alt="Diagramma dei casi d'uso della dashboard degli amministratori" src="res/DashboardAmministrazione.jpg">
+<img title="Dashboard amministratori" alt="Diagramma dei casi d'uso della dashboard degli amministratori" src="res/DashboardAmministrazione.svg">
 
-<img title="Carrello" alt="Diagramma dei casi d'uso dei carrelli" src="res/Carrello.jpg">
+<img title="Carrello" alt="Diagramma dei casi d'uso dei carrelli" src="res/Carrello.svg">
 
-<img title="Sistema restituzione" alt="Diagramma dei casi d'uso del sistema di restituzione" src="res/SistemaRestituzione.jpg">
+<img title="Sistema restituzione" alt="Diagramma dei casi d'uso del sistema di restituzione" src="res/SistemaRestituzione.svg">
 
-<img title="Sistema antitaccheggio" alt="Diagramma dei casi d'uso del sistema antitaccheggio" src="res/SistemaAntitaccheggio.jpg">
+<img title="Sistema antitaccheggio" alt="Diagramma dei casi d'uso del sistema antitaccheggio" src="res/SistemaAntitaccheggio.svg">
 
-<img title="Gondola" alt="Diagramma dei casi d'uso della gondola" src="res/Gondola.jpg"> -->
+<img title="Gondola" alt="Diagramma dei casi d'uso della gondola" src="res/Gondola.svg">
 
 A seguito di un incontro è emerso che la scelta migliore sia quella di utilizzare u'architettura a microservizi, nello specifico, uno per ogni bounded context, quindi un sistema composto da un totale di 6 microservizi. L'architettura del sistema è stata poi sviluppata sulle linee guida della clean architecture di Martin Fowler. I microservizi sono:
 - Users
