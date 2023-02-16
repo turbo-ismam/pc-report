@@ -51,6 +51,8 @@ Contiene due moduli:
     - **routes**: questo modulo contiene le route di un web service che descrivono l'API che il microservizio espone verso l'esterno.
     Ciascuna route è rappresentata da un'URI, alla quale possono essere fatte richieste di tipo GET, POST, PUT o DELETE.
     La codifica dei messaggi che vengono inviati e ricevuti contattando il web service è sempre in formato JSON.
+
+
     
 ## Design nel dettaglio
 
@@ -114,9 +116,9 @@ Come ogni microservizio ha una serie di messaggi in ingresso ed in uscita:
         - notifica aggiunta prodotto in carrello (shopping e cart)
         - notifica restituzione prodotto (store)
 - comunicazioni in uscita:
-    - visualizza presenza allestimenti con prodotto (store)
-    - visualizza presenza processi d'acqusito con prodotto (shopping)
-
+    - query per visualizzare dati:
+        - visualizza presenza allestimenti con prodotto (store)
+        - visualizza presenza processi d'acqusito con prodotto (shopping)
 
 ### Livello core
 Questo bounded context è responsabile dei seguenti aggregates:
@@ -150,8 +152,7 @@ Per definire il comportamento di questo bounded context troviamo i seguenti atto
     - remove: permette l'eliminazione di un prodotto specificando l'identificativo e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - update: permette l'aggiornamento dello stato del prodotto, viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
 - attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter generare eventi in uscita:
-- visualizza presenza processi d'acqusito con prodotto: evento che si inoltra allo Shopping in quanto per rimuovere un prodotto è necessario che non sia presente al momento in processi di acquisto.
-- visualizza presenza allestimenti con prodotto
+    - visualizza presenza processi d'acqusito con prodotto: evento che si inoltra allo Shopping in quanto per rimuovere un prodotto è necessario che non sia presente al momento in processi di acquisto.
 
 ### Microservizio "Carts"
 
@@ -192,7 +193,18 @@ Cart mette a disposizione un'interfaccia per poter essere creato, eliminato ed a
 
 ### Livello application
 Per definire il comportamento di questo bounded context sono stati utilizzati i seguenti attori:
-- cart server actor:
+- cart server actor: gestisce le operazioni relative ai carrelli, al suo interno vengono gestiti i seguenti messaggi:
+    - associate cart to customer: permette di associare un carrello ad un cliente, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - unlock locked cart: sblocca un carrello precedentemente bloccato, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - lock unocked cart: blocca un carrello sbloccato, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - add: aggiunge un nuovo carrello, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - remove: rimuove un carrello pre esistente, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+    - show carts: visualizza tutti i carrelli in un dato negozio, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
+- attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter generare eventi in uscita:
+    - notifica aggiunta prodotto in carrello: evento che si inoltra a prodotti e shopping in quanto devono aggiornarsi
+    - notifica associazione carrello: evento che si inoltra a shopping per informarlo che il carrello è associato ad un cliente
+    - attiva allarme carrello: evento che si inoltra a cliente per informarlo attraverso l'allarme
+- attore per ditto: questo attore comunica con l'istanza di ditto per poter effettuare operazioni di aggiunta, modifica e rimozione di elementi.
 
 ### Microservizio "Stores"
 "Stores" è il microservizio adibito alla gestione delle informazioni relative ai negozi: allestimento, sistema antitaccheggio e sistema di restituzione.
