@@ -195,8 +195,85 @@ Per definire il comportamento di questo bounded context sono stati utilizzati i 
 - cart server actor:
 
 ### Microservizio "Stores"
+"Stores" è il microservizio adibito alla gestione delle informazioni relative ai negozi: allestimento, sistema antitaccheggio e sistema di restituzione.
+
+Come ogni microservizio ha una serie di messaggi in ingresso e restituisce in uscita:
+- comunicazioni in ingresso:
+    - query per aggiornamenti:
+        - aggiungi / modifica / elimina fila di prodotti (inviato da dashboard)
+        - aggiungi / modifica / elimina scaffalatura (inviato da dashboard)
+        - aggiungi / modifica / elimina scaffale (inviato da dashboard)
+        - aggiungi / modifica / elimina gondola(inviato da dashboard)
+    - query per visualizzare dati:
+        - visualizza allestimento (inviato da dashboard)
+        - visualizza presenza allestimenti con prodotto (inviato da prodotti)
+    - eventi:
+        - notifica prodotto inserito in sistema di restituizione (inviato da cliente)
+        - notifica prodotto restituito (inviato da cliente)
+        - notifica rilevamento prodotto dal sistema antitaccheggio (inviato da cliente)
+        - notifica sollevamento prodotto in catalogo (inviato da cliente)
+- comunicazioni in uscita:
+    - query per visualizzare dati:
+        - visualizza prodotto (inviato a cliente)
+    - eventi
+        - notifica di allarme del sistema antitaccheggio (inviato a cliente)
+        - notifica restituzione prodotto (inviato a prodotti)
+        - notifica sollevamento prodotto in catalogo (inviato a prodotti)
+        - notifica prodotto restituito (inviato a shopping)
+        - notifica prodotto in catalogo sollevato (inviato a dashboard)
+        - notifica prodotto restituito (inviato a dashboard)
 
 ### Microservizio "Shopping"
+"Shopping" è il microservizio adibito alla gestione delle informazioni relative agli acquisti presso un negozio.
+
+Come ogni microservizio ha una serie di messaggi in ingresso e restituisce in uscita:
+- comunicazioni in ingresso:
+    - query per aggiornamenti:
+        - annulla procedura d'acquisto cliente (inviato da dashboard)
+        - aggiunta / rimozione di un prodotto dal contenuto del carrello di un cliente (inviato da dashboard)
+    - query per visualizzare dati:
+        - visualizza procedura d'acquisto cliente (inviato da dashboard e applicazione)
+        - visualizza presenza processi d'acqusito con prodotto (inviato da prodotti)
+    - eventi:
+        - notifica inizio procedura di acquisto di un cliente (inviato da applicazione)
+        - notifica termine procedura di acquisto di un cliente (inviato da applicazione)
+        - notifica associazione carrello (inviato da carrelli)
+        - notifica di aggiunta di un prodotto al carrello (inviato da applicazione)
+        - notifica prodotto restituito (inviato da negozi)
+        - notifica cliente de-registrato (inviato da utenti)
+- comunicazioni in uscita:
+    - query per aggiornamenti:
+        - blocca un carrello (inviato a carrelli)
+        - aggiungi acquisto (inviato a pagamenti)
+        - aggiungi acquisto (inviato a pagamenti)
+        - rimuovi prodotto (inviato a prodotti)
+    - eventi:
+        - notifica sollevamento prodotto in catalogo (inviato a prodotti)
+        - notifica aggiunta prodotto in carrello (inviato a prodotti)
 
 ### Microservizio "Payments"
+"Payments" è il microservizio adibito alla gestione delle informazioni relative ai pagamenti effettuati a seguito degli acquisti effettuati.
 
+Come ogni microservizio ha una serie di messaggi in ingresso e restituisce in uscita:
+- comunicazioni in ingresso:
+    - query per aggiornamenti:
+        - registra carta di pagamento cliente (inviato da applicazione)
+        - modifica carta di pagamento cliente (inviato da applicazione)
+        - aggiungi acquisto (inviato da dashboard e shopping)
+        - rimuovi acquisto (inviato da dashboard)
+        - aggiungi pagamento (inviato da dashboard e shopping)
+        - rimuovi pagamento (inviato da dashboard)
+    - query per visualizzare dati:
+        - visualizza acquisti per cliente (inviato da applicazione e dashboard)
+        - visualizza acquisti per intervallo di date (inviato da dashboard)
+        - visualizza acquisti per negozio (inviato da dashboard)
+        - visualizza pagamenti per intervallo di date (inviato da dashboard)
+        - visualizza pagamenti per cliente (inviato da dashboard)
+    - eventi:
+        - notifica pagamento con successo (inviato da pagamenti)
+        - notifica pagamento con fallimento (inviato da pagamenti)
+        - notifica de-registrazione cliente (inviato da utenti)
+- comunicazioni in uscita:
+    - eventi:
+        - notifica pagamento effettuato con successo (inviato ad applicazione)
+        - notifica pagamento effettuato con fallimento (inviato ad applicazione)
