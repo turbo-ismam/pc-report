@@ -1,4 +1,4 @@
-# Sviluppo
+# Continuous Integration
 
 ## Trunk based development
 
