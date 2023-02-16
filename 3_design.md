@@ -107,13 +107,13 @@ Come ogni microservizio ha una serie di messaggi in ingresso e in uscita:
         - visualizzare prodotti in catalogo (inviato da dashboard, applicazione e microservizio shopping)
         - visualizzare prodotti restituiti (inviato da dashboard)
         - visualizzare prodotti in catalogo sollevati (inviato da dashboard)
-        - visualizzare tipologia di prodotto (inviato da dashboard e microservizio store)
+        - visualizzare tipologia di prodotto (inviato da dashboard e microservizio stores)
     - eventi:
         - prodotto rimesso a posto (inviato da dashboard)
         - prodotto in catalogo rimesso a posto (inviato da dashboard)
-        - prodotto in catalogo sollevato (inviato dai microservizi shopping e store)
-        - prodotto aggiunto al carrello (inviato dai microservizi shopping e cart)
-        - prodotto restituito (inviato dal microservizio store)
+        - prodotto in catalogo sollevato (inviato dai microservizi shopping e stores)
+        - prodotto aggiunto al carrello (inviato dai microservizi shopping e carts)
+        - prodotto restituito (inviato dal microservizio stores)
 - comunicazioni in uscita:
     - query di visualizzazione:
         - visualizzare presenza processi d'acqusito con prodotto (inviato a microservizio shopping)
@@ -146,7 +146,7 @@ Per definire il comportamento di questo microservizio troviamo i seguenti attori
     - add: permette l'inserimento di un prodotto specificando l'identificativo (composto da un proprio id, dall'id dello store e dal prodotto in catalogo) e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - remove: permette l'eliminazione di un prodotto specificando l'identificativo e viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - update: permette l'aggiornamento dello stato del prodotto, viene data una positiva in caso l'operazione abbia avuto successo, negativa altrimenti
-- attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter catturare eventi in ingresso:
+- attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter catturare gli eventi in ingresso:
     - prodotto rimesso a posto: quando un prodotto viene riposto sullo scaffale
     - prodotto in catalogo rimesso a posto: quando un prodotto in catalogo viene riposto sullo scaffale
     - sollevamento prodotto in catalogo: quando un prodotto in catalogo viene sollevato dal proprio scaffale
@@ -159,39 +159,37 @@ Per definire il comportamento di questo microservizio troviamo i seguenti attori
 
 Come ogni microservizio ha una serie di messaggi in ingresso in uscita:
 - messaggi in ingresso:
-    - query che modificano lo stato:
+    - comandi che modificano lo stato:
         - associare un carrello ad un utente (inviato da applicazione e dashboard)
         - sbloccare un carrello bloccato (inviato da dashboard)
         - bloccare un carrello sbloccato (inviato da dashboard)
-        - aggiungi un carrello (inviato da dashboard)
-        - rimuovi un carrello (inviato da dashboard)
-        - blocca un carrello associato ad un cliente (inviato da shopping)
+        - aggiungere un carrello (inviato da dashboard)
+        - rimuovere un carrello (inviato da dashboard)
+        - bloccare un carrello associato ad un cliente (inviato da microservizio shopping)
     - query di visualizzazione:
-        - visualizza i carrelli in negozio (inviato da dashboard)
-    - eventi
-        - notifica di appoggio di un prodotto nel carrello (inviato da user)
-        - notifica del movimento del carrello (inviato da cliente)
-        - notifica cliente de-registrato (inviato da users)
-- messaggi in uscita
-    - eventi
-        - Notifica aggiunta prodotto in carrello (inviato a prodotti)
-        - Notifica di aggiunta di un prodotto in carrello (inviato a shopping)
-        - Notifica associazione carrello (inviato a shopping)
-    - query che modificano lo stato
-        - Attiva allarme carrello (inviato a users)
+        - visualizzare i carrelli in negozio (inviato da dashboard)
+    - eventi:
+        - appoggio di un prodotto nel carrello (inviato dal carrello fisico)
+        - movimento del carrello (inviato dal carrello fisico)
+        - cliente de-registrato (inviato da microservizio users)
+- messaggi in uscita:
+    - comandi che modificano lo stato
+        - Attivare allarme carrello (inviato a microservizio users)
+    - eventi:
+        - Aggiunta prodotto in carrello (inviato a microservizio items)
+        - Aggiunta di un prodotto in carrello (inviato a microservizio shopping)
+        - Associazione carrello (inviato a microservizio shopping)
 
 ### Livello domain
 
 Il bounded context associato a questo microservizio è responsabile dei seguenti aggregates:
-- cart: rappresentano i carrelli del sistema, possono essere di tre tipologie:
+- cart: rappresenta un carrello in negozio, può essere in tre stati differenti:
     - associated cart: rappresenta un carrello che è associato ad un cliente
     - locked cart: rappresenta un carrello che è bloccato
     - unlocked cart: rappresenta un cartello che è sbloccato
 
-Cart mette a disposizione un'interfaccia per poter essere creato, eliminato ed aggiornato
-
 ### Livello application
-Per definire il comportamento di questo bounded context sono stati utilizzati i seguenti attori:
+Per definire il comportamento di questo microservizio sono stati utilizzati i seguenti attori:
 - cart server actor: gestisce le operazioni relative ai carrelli, al suo interno vengono gestiti i seguenti messaggi:
     - associate cart to customer: permette di associare un carrello ad un cliente, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - unlock locked cart: sblocca un carrello precedentemente bloccato, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
@@ -200,10 +198,10 @@ Per definire il comportamento di questo bounded context sono stati utilizzati i 
     - remove: rimuove un carrello pre esistente, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
     - show carts: visualizza tutti i carrelli in un dato negozio, viene data una risposta positiva se l'operazione è andata a buon fine, negativa altrimenti
 - attore per il message broker: in questo bounded context abbiamo necessità di questo attore per poter generare eventi in uscita:
-    - notifica aggiunta prodotto in carrello: evento che si inoltra a prodotti e shopping in quanto devono aggiornarsi
-    - notifica associazione carrello: evento che si inoltra a shopping per informarlo che il carrello è associato ad un cliente
-    - attiva allarme carrello: evento che si inoltra a cliente per informarlo attraverso l'allarme
-- attore per ditto: questo attore comunica con l'istanza di ditto per poter effettuare operazioni di aggiunta, modifica e rimozione di elementi.
+    - aggiunta prodotto in carrello: evento che si inoltra ai microservizi items e shopping in quanto devono aggiornare il proprio stato
+    - associazione carrello: evento che si inoltra al microservizio shopping per informarlo che un carrello è associato ad un cliente
+    - attivazione allarme carrello: evento che si inoltra al carrello fisico per attivare il suo allarme
+- attore per il middleware per i digital twin: questo attore comunica con un'instanza del middleware per i digital twin per poter interagire con le copie fisiche dei carrelli
 
 ### Microservizio "Stores"
 "Stores" è il microservizio adibito alla gestione delle informazioni relative ai negozi: allestimento, sistema antitaccheggio e sistema di restituzione.
