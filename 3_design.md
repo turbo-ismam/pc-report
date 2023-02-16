@@ -174,11 +174,11 @@ Come ogni microservizio ha una serie di messaggi in ingresso in uscita:
         - cliente de-registrato (inviato da microservizio users)
 - messaggi in uscita:
     - comandi che modificano lo stato
-        - Attivare allarme carrello (inviato a microservizio users)
+        - attivare allarme carrello (inviato a microservizio users)
     - eventi:
-        - Aggiunta prodotto in carrello (inviato a microservizio items)
-        - Aggiunta di un prodotto in carrello (inviato a microservizio shopping)
-        - Associazione carrello (inviato a microservizio shopping)
+        - aggiunta prodotto in carrello (inviato a microservizio items)
+        - aggiunta di un prodotto in carrello (inviato a microservizio shopping)
+        - associazione carrello (inviato a microservizio shopping)
 
 ### Livello domain
 
@@ -208,81 +208,81 @@ Per definire il comportamento di questo microservizio sono stati utilizzati i se
 
 Come ogni microservizio ha una serie di messaggi in ingresso e restituisce in uscita:
 - comunicazioni in ingresso:
-    - query per aggiornamenti:
-        - aggiungi / modifica / elimina fila di prodotti (inviato da dashboard)
-        - aggiungi / modifica / elimina scaffalatura (inviato da dashboard)
-        - aggiungi / modifica / elimina scaffale (inviato da dashboard)
-        - aggiungi / modifica / elimina gondola(inviato da dashboard)
-    - query per visualizzare dati:
-        - visualizza allestimento (inviato da dashboard)
-        - visualizza presenza allestimenti con prodotto (inviato da prodotti)
+    - comandi che modificano lo stato:
+        - aggiungere, modificare ed eliminare fila di prodotti (inviato da dashboard)
+        - aggiungere, modificare ed eliminare scaffalatura (inviato da dashboard)
+        - aggiungere, modificare ed eliminare scaffale (inviato da dashboard)
+        - aggiungere, modificare ed eliminare gondole (inviato da dashboard)
+    - query di visualizzazione:
+        - visualizzare allestimento (inviato da dashboard)
+        - visualizzare presenza allestimenti con prodotto (inviato da microservizio items)
     - eventi:
-        - notifica prodotto inserito in sistema di restituizione (inviato da cliente)
-        - notifica prodotto restituito (inviato da cliente)
-        - notifica rilevamento prodotto dal sistema antitaccheggio (inviato da cliente)
-        - notifica sollevamento prodotto in catalogo (inviato da cliente)
+        - prodotto inserito in sistema di restituizione (inviato da cliente)
+        - prodotto restituito (inviato da cliente)
+        - rilevamento prodotto dal sistema antitaccheggio (inviato da cliente)
+        - sollevamento prodotto in catalogo (inviato da cliente)
 - comunicazioni in uscita:
     - query per visualizzare dati:
         - visualizza prodotto (inviato a cliente)
     - eventi
-        - notifica di allarme del sistema antitaccheggio (inviato a cliente)
-        - notifica restituzione prodotto (inviato a prodotti)
-        - notifica sollevamento prodotto in catalogo (inviato a prodotti)
-        - notifica prodotto restituito (inviato a shopping)
-        - notifica prodotto in catalogo sollevato (inviato a dashboard)
-        - notifica prodotto restituito (inviato a dashboard)
+        - allarme del sistema antitaccheggio (inviato a cliente)
+        - restituzione prodotto (inviato a microservizio items)
+        - sollevamento prodotto in catalogo (inviato a microservizio items)
+        - prodotto restituito (inviato a microservizio shopping)
+        - prodotto in catalogo sollevato (inviato a dashboard)
+        - prodotto restituito (inviato a dashboard)
 
 ### Microservizio "Shopping"
 "Shopping" è il microservizio adibito alla gestione delle informazioni relative agli acquisti presso un negozio.
 
 Come ogni microservizio ha una serie di messaggi in ingresso e restituisce in uscita:
 - comunicazioni in ingresso:
-    - query per aggiornamenti:
-        - annulla procedura d'acquisto cliente (inviato da dashboard)
-        - aggiunta / rimozione di un prodotto dal contenuto del carrello di un cliente (inviato da dashboard)
-    - query per visualizzare dati:
+    - comandi che modificano lo stato:
+        - annullare la procedura d'acquisto cliente (inviato da dashboard)
+        - aggiungere e rimuovere di un prodotto dal contenuto del carrello di un cliente (inviato da dashboard)
+    - query di visualizzazione:
         - visualizza procedura d'acquisto cliente (inviato da dashboard e applicazione)
-        - visualizza presenza processi d'acqusito con prodotto (inviato da prodotti)
+        - visualizza presenza processi d'acqusito con prodotto (inviato da microservizio items)
     - eventi:
-        - notifica inizio procedura di acquisto di un cliente (inviato da applicazione)
-        - notifica termine procedura di acquisto di un cliente (inviato da applicazione)
-        - notifica associazione carrello (inviato da carrelli)
-        - notifica di aggiunta di un prodotto al carrello (inviato da applicazione)
-        - notifica prodotto restituito (inviato da negozi)
-        - notifica cliente de-registrato (inviato da utenti)
+        - inizio procedura di acquisto di un cliente (inviato da applicazione)
+        - termine procedura di acquisto di un cliente (inviato da applicazione)
+        - associazione carrello (inviato da microservizio carts)
+        - di aggiunta di un prodotto al carrello (inviato da applicazione)
+        - prodotto restituito (inviato da microservizio stores)
+        - cliente de-registrato (inviato da microservizio users)
 - comunicazioni in uscita:
-    - query per aggiornamenti:
-        - blocca un carrello (inviato a carrelli)
-        - aggiungi acquisto (inviato a pagamenti)
-        - aggiungi acquisto (inviato a pagamenti)
-        - rimuovi prodotto (inviato a prodotti)
+    - comandi che modificano lo stato:
+        - bloccare un carrello (inviato a microservizio carts)
+        - aggiungere acquisto (inviato a microservizio payments)
+        - aggiungere acquisto (inviato a microservizio payments)
+        - rimuovere prodotto (inviato a microservizio items)
     - eventi:
-        - notifica sollevamento prodotto in catalogo (inviato a prodotti)
-        - notifica aggiunta prodotto in carrello (inviato a prodotti)
+        - sollevamento prodotto in catalogo (inviato a microservizio items)
+        - aggiunta prodotto in carrello (inviato a microservizio items)
 
 ### Microservizio "Payments"
 "Payments" è il microservizio adibito alla gestione delle informazioni relative ai pagamenti effettuati a seguito degli acquisti effettuati.
 
 Come ogni microservizio ha una serie di messaggi in ingresso e restituisce in uscita:
 - comunicazioni in ingresso:
-    - query per aggiornamenti:
-        - registra carta di pagamento cliente (inviato da applicazione)
-        - modifica carta di pagamento cliente (inviato da applicazione)
-        - aggiungi acquisto (inviato da dashboard e shopping)
-        - rimuovi acquisto (inviato da dashboard)
-        - aggiungi pagamento (inviato da dashboard e shopping)
-        - rimuovi pagamento (inviato da dashboard)
-    - query per visualizzare dati:
+    - comandi che modificano lo stato:
+        - registrare carta di pagamento cliente (inviato da applicazione)
+        - modificare carta di pagamento cliente (inviato da applicazione)
+        - aggiungere acquisto (inviato da dashboard e microservizio shopping)
+        - rimuovere acquisto (inviato da dashboard)
+        - aggiungere pagamento (inviato da dashboard e microservizio shopping)
+        - rimuovere pagamento (inviato da dashboard)
+    - query di visualizzazione:
         - visualizza acquisti per cliente (inviato da applicazione e dashboard)
         - visualizza acquisti per intervallo di date (inviato da dashboard)
         - visualizza acquisti per negozio (inviato da dashboard)
         - visualizza pagamenti per intervallo di date (inviato da dashboard)
         - visualizza pagamenti per cliente (inviato da dashboard)
     - eventi:
-        - notifica pagamento con successo (inviato da pagamenti)
-        - notifica pagamento con fallimento (inviato da pagamenti)
-        - notifica de-registrazione cliente (inviato da utenti)
+        - pagamento con successo (inviato da microservizio payments)
+        - pagamento con fallimento (inviato da microservizio payments)
+        - de-registrazione cliente (inviato da microservizio users)
 - comunicazioni in uscita:
     - eventi:
-        - notifica pagamento effettuato con successo (inviato ad applicazione)
-        - notifica pagamento effettuato con fallimento (inviato ad applicazione)
+        - pagamento effettuato con successo (inviato ad applicazione)
+        - pagamento effettuato con fallimento (inviato ad applicazione)
